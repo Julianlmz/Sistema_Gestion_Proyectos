@@ -1,13 +1,10 @@
 from fastapi import FastAPI
+import Empleado
 
-app = FastAPI()
+app = FastAPI(title="Sistema de Gestion de Proyectos")
 
+app.include_router(Empleado.router)
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
