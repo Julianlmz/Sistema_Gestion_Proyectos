@@ -1,9 +1,13 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
 
 class Estado(str,Enum):
     Activo = "Activo"
     Inactivo = "Inactivo"
+
+class EmpleadoProyecto(SQLModel, table=True):
+    empleado_id: int = Field(foreign_key="empleado.id", primary_key=True)
+    proyecto_id: int = Field(foreign_key="proyecto.id", primary_key=True)
 
 class EmpleadoBase(SQLModel):
     nombre: str
