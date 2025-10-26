@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from Database import SessionDep
 from models import Empleado, EmpleadoCreate, Estado
 from typing import List
@@ -15,8 +15,12 @@ async def create_empleado(new_empleado: EmpleadoCreate, session: SessionDep):
     return empleado
 
 @router.get("/", response_model=List[Empleado])
-async def lista_empleados(especialidad: str, estado: Estado, session: SessionDep):
-    query = select(Empleado).where(Empleado.especialidad.contains(especialidad), Empleado.estado == estado)
+async def lista_empleados(especialidad: str = Query(default=""), estado : Estado = Query(default=None), session: SessionDep = None):
+    query = select(Empleado)
+    if especialidad:
+        query = query.where(Empleado.especialidad.contains(especialidad))
+    if estado:
+        query = query.where(Empleado.estado == estado)
     empleados = session.exec(query).all()
     return empleados
 
