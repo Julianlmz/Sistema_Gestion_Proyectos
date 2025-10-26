@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
+from typing import List
 
 class Estado(str,Enum):
     Activo = "Activo"
@@ -17,6 +18,8 @@ class EmpleadoBase(SQLModel):
 
 class Empleado(EmpleadoBase, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    proyectos: List["Proyecto"] = Relationship(back_populates="empleados", link_model=EmpleadoProyecto)
+    proyectos_gerente: List["Proyecto"] = Relationship(back_populates="Gerente")
 
 class EmpleadoCreate(EmpleadoBase):
     pass
