@@ -49,6 +49,9 @@ async def delete_empleado(empleado_id: int, session: SessionDep):
     empleado = session.get(Empleado, empleado_id)
     if not empleado:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    if empleado.proyectos_gerente:
+        nombres_proyectos = [p.nombre for p in empleado.proyectos_gerente]
+        raise HTTPException(status_code=400, detail=f"El empleado no se puede eliminar, el empleado es gerente de: {'; '.join(nombres_proyectos)}")
     session.delete(empleado)
     session.commit()
     return
