@@ -1,4 +1,9 @@
 from sqlmodel import SQLModel, Field
+from enum import Enum
+
+class Estado(str,Enum):
+    Activo = "Activo"
+    Inactivo = "Inactivo"
 
 class EmpleadoBase(SQLModel):
     nombre: str
