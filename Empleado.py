@@ -32,3 +32,12 @@ async def update_empleado(empleado_id: int, updated: EmpleadoCreate, session: Se
     session.commit()
     session.refresh(empleado)
     return empleado
+
+@router.delete("/{empleado_id}", status_code=204)
+async def delete_empleado(empleado_id: int, session: SessionDep):
+    empleado = session.get(Empleado, empleado_id)
+    if not empleado:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    session.delete(empleado)
+    session.commit()
+    return
