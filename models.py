@@ -9,7 +9,7 @@ class EmpleadoBase(SQLModel):
     nombre: str
     especialidad: str
     salario: float
-    estado: bool
+    estado: Estado
 
 class Empleado(EmpleadoBase, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -21,7 +21,7 @@ class ProyectoBase(SQLModel):
     nombre: str
     descripcion: str
     presupuesto: float
-    estado: bool
+    estado: Estado
 
 class Proyecto(ProyectoBase, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
