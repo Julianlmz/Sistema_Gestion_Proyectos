@@ -19,7 +19,7 @@ class EmpleadoBase(SQLModel):
 class Empleado(EmpleadoBase, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     proyectos: List["Proyecto"] = Relationship(back_populates="empleados", link_model=EmpleadoProyecto)
-    proyectos_gerente: List["Proyecto"] = Relationship(back_populates="Gerente")
+    proyectos_gerente: List["Proyecto"] = Relationship(back_populates="gerente")
 
 class EmpleadoCreate(EmpleadoBase):
     pass
@@ -43,6 +43,9 @@ class ProyectoBase(SQLModel):
 
 class Proyecto(ProyectoBase, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    gerente_id: int = Field(foreign_key="empleado.id")
+    gerente: Empleado = Relationship(back_populates="proyectos_gerente")
+    empleados: List[Empleado] = Relationship(back_populates="proyectos", link_model=EmpleadoProyecto)
 
 class ProyectoCreate(ProyectoBase):
     pass
