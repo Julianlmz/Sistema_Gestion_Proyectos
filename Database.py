@@ -1,8 +1,11 @@
-from sqlmodel import Session, create_engine
+from sqlmodel import Session, create_engine, SQLModel
 from fastapi import Depends
 from typing import Annotated
 
 engine = create_engine('sqlite:///Proyectos.db')
+
+def create_tables():
+    SQLModel.metadata.create_all(engine)
 
 def get_session():
     with Session(engine) as session:
