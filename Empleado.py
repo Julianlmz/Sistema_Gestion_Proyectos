@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from Database import SessionDep
-from models import Empleado, EmpleadoCreate, Estado
+from models import Empleado, EmpleadoCreate, Estado, EmpleadoConProyectos
 from typing import List
 from sqlmodel import select
 
@@ -23,6 +23,13 @@ async def lista_empleados(especialidad: str = Query(default=""), estado : Estado
         query = query.where(Empleado.estado == estado)
     empleados = session.exec(query).all()
     return empleados
+
+@router.get("/{empleado_id}", response_model=EmpleadoConProyectos)
+async def obtener_empleado(empleado_id: int, session: SessionDep):
+    empleado = session.get(Empleado, empleado_id)
+    if not empleado:
+        raise HTTPException(status_code=404, detail="El empleado no existe")
+    return empleado
 
 @router.put("/{empleado_id}", response_model=Empleado)
 async def update_empleado(empleado_id: int, updated: EmpleadoCreate, session: SessionDep):
