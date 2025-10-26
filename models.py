@@ -56,3 +56,12 @@ class EmpleadoResumen(SQLModel):
     especialidad: str
     salario: float
     estado: Estado
+
+class ProyectoConRelaciones(ProyectoBase):
+    id: int
+    gerente_id: int
+    gerente: EmpleadoResumen
+    empleados: List[EmpleadoResumen] = []
+
+class AsignarEmpleado(SQLModel):
+    empleado_id: int
