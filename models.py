@@ -48,4 +48,11 @@ class Proyecto(ProyectoBase, SQLModel, table=True):
     empleados: List[Empleado] = Relationship(back_populates="proyectos", link_model=EmpleadoProyecto)
 
 class ProyectoCreate(ProyectoBase):
-    pass
+    gerente_id: int
+
+class EmpleadoResumen(SQLModel):
+    id: int
+    nombre: str
+    especialidad: str
+    salario: float
+    estado: Estado
