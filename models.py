@@ -24,6 +24,17 @@ class Empleado(EmpleadoBase, SQLModel, table=True):
 class EmpleadoCreate(EmpleadoBase):
     pass
 
+class EmpleadoConProyectos(EmpleadoBase):
+    id: int
+    proyectos: List["ProyectoResumen"] = []
+
+class ProyectoResumen(SQLModel):
+    id: int
+    nombre: str
+    descripcion: str
+    presupuesto: str
+    estado: Estado
+
 class ProyectoBase(SQLModel):
     nombre: str
     descripcion: str
