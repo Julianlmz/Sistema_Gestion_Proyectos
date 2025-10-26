@@ -32,3 +32,12 @@ async def update_proyecto(proyecto_id: int, updated: ProyectoCreate, session: Se
     session.commit()
     session.refresh(proyecto)
     return proyecto
+
+@router.delete("/{proyecto_id}", status_code=204)
+async def delete_proyecto(proyecto_id: int, session: SessionDep):
+    proyecto = session.get(Proyecto, proyecto_id)
+    if not proyecto:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    session.delete(proyecto)
+    session.commit()
+    return
