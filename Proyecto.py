@@ -42,6 +42,13 @@ async def update_proyecto(proyecto_id: int, updated: ProyectoCreate, session: Se
     proyecto =session.get(Proyecto, proyecto_id)
     if not proyecto:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    gerente = session.get(Empleado, updated.gerente_id)
+    if not gerente:
+        raise HTTPException(status_code=404, detail="Gerente no encontrado")
+    if proyecto.nombre != updated.nombre:
+        updated = session.exec(select(Proyecto).where(Proyecto.nombre == updated.nombre)).first()
+        if updated:
+            raise HTTPException(status_code=400, detail= f"Ya existe un proyecto con el nombre '{updated.nombre}'")
     proyecto.nombre = updated.nombre
     proyecto.descripcion = updated.descripcion
     proyecto.presupuesto = updated.presupuesto
