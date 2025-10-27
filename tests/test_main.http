@@ -1,11 +1,588 @@
-# Test your FastAPI endpoints
+### ====================================================================
+### SISTEMA DE GESTIÓN DE PROYECTOS - TEST SUITE
+### API REST con FastAPI + SQLModel
+### ====================================================================
 
-GET http://127.0.0.1:8000/
+@baseUrl = http://127.0.0.1:8000
+
+### ====================================================================
+### 🏠 ROOT & HEALTH CHECK
+### ====================================================================
+
+### Test 1: Root endpoint
+GET {{baseUrl}}/
 Accept: application/json
 
 ###
 
-GET http://127.0.0.1:8000/hello/User
+### Test 2: Health check
+GET {{baseUrl}}/health
 Accept: application/json
 
 ###
+
+### Test 3: Documentación Swagger
+GET {{baseUrl}}/docs
+
+###
+
+### ====================================================================
+### 👥 EMPLEADOS - CRUD COMPLETO
+### ====================================================================
+
+### Test 4: Crear Empleado #1 (Gerente)
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "Ana García Martínez",
+  "especialidad": "Project Manager",
+  "salario": 7000.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 5: Crear Empleado #2 (Desarrollador Backend)
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "Carlos López Ruiz",
+  "especialidad": "Desarrollador Backend",
+  "salario": 5500.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 6: Crear Empleado #3 (Desarrollador Frontend)
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "María Rodríguez Sánchez",
+  "especialidad": "Desarrollador Frontend",
+  "salario": 5800.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 7: Crear Empleado #4 (Diseñador UX/UI)
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "Pedro Martínez Gómez",
+  "especialidad": "Diseñador UX/UI",
+  "salario": 5200.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 8: Crear Empleado #5 (Inactivo)
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "Laura Fernández Torres",
+  "especialidad": "QA Tester",
+  "salario": 4800.0,
+  "estado": "Inactivo"
+}
+
+###
+
+### Test 9: Listar TODOS los empleados
+GET {{baseUrl}}/empleado/
+Accept: application/json
+
+###
+
+### Test 10: Filtrar empleados por especialidad "Desarrollador"
+GET {{baseUrl}}/empleado/?especialidad=Desarrollador
+Accept: application/json
+
+###
+
+### Test 11: Filtrar empleados por estado "Activo"
+GET {{baseUrl}}/empleado/?estado=Activo
+Accept: application/json
+
+###
+
+### Test 12: Filtrar empleados por especialidad Y estado
+GET {{baseUrl}}/empleado/?especialidad=Desarrollador&estado=Activo
+Accept: application/json
+
+###
+
+### Test 13: Obtener empleado por ID (con proyectos)
+GET {{baseUrl}}/empleado/1
+Accept: application/json
+
+###
+
+### Test 14: Actualizar empleado
+PUT {{baseUrl}}/empleado/2
+Content-Type: application/json
+
+{
+  "nombre": "Carlos López Ruiz",
+  "especialidad": "Senior Backend Developer",
+  "salario": 6500.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 15: Intentar obtener empleado inexistente (debe fallar - 404)
+GET {{baseUrl}}/empleado/999
+Accept: application/json
+
+###
+
+### Test 16: Ver proyectos del empleado (ruta dedicada)
+GET {{baseUrl}}/empleado/1/proyectos
+Accept: application/json
+
+###
+
+### ====================================================================
+### 📁 PROYECTOS - CRUD COMPLETO
+### ====================================================================
+
+### Test 17: Crear Proyecto #1
+POST {{baseUrl}}/proyecto/
+Content-Type: application/json
+
+{
+  "nombre": "Sistema CRM Empresarial",
+  "descripcion": "Desarrollo de sistema de gestión de clientes con módulos de ventas y marketing",
+  "presupuesto": 75000.0,
+  "estado": "Activo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 18: Crear Proyecto #2
+POST {{baseUrl}}/proyecto/
+Content-Type: application/json
+
+{
+  "nombre": "App Mobile E-commerce",
+  "descripcion": "Aplicación móvil para comercio electrónico con pasarela de pagos",
+  "presupuesto": 50000.0,
+  "estado": "Activo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 19: Crear Proyecto #3
+POST {{baseUrl}}/proyecto/
+Content-Type: application/json
+
+{
+  "nombre": "Portal Web Corporativo",
+  "descripcion": "Portal web institucional con sistema de noticias y blog",
+  "presupuesto": 35000.0,
+  "estado": "Activo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 20: Intentar crear proyecto con gerente inexistente (debe fallar - 404)
+POST {{baseUrl}}/proyecto/
+Content-Type: application/json
+
+{
+  "nombre": "Proyecto Fallido",
+  "descripcion": "Este proyecto no debe crearse",
+  "presupuesto": 10000.0,
+  "estado": "Activo",
+  "gerente_id": 999
+}
+
+###
+
+### Test 21: Intentar crear proyecto con nombre duplicado (debe fallar - 400)
+POST {{baseUrl}}/proyecto/
+Content-Type: application/json
+
+{
+  "nombre": "Sistema CRM Empresarial",
+  "descripcion": "Otro CRM",
+  "presupuesto": 30000.0,
+  "estado": "Activo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 22: Listar TODOS los proyectos
+GET {{baseUrl}}/proyecto/
+Accept: application/json
+
+###
+
+### Test 23: Filtrar proyectos por estado "Activo"
+GET {{baseUrl}}/proyecto/?estado=Activo
+Accept: application/json
+
+###
+
+### Test 24: Filtrar proyectos por presupuesto mínimo
+GET {{baseUrl}}/proyecto/?presupuesto_min=50000
+Accept: application/json
+
+###
+
+### Test 25: Filtrar proyectos por rango de presupuesto
+GET {{baseUrl}}/proyecto/?presupuesto_min=30000&presupuesto_max=60000
+Accept: application/json
+
+###
+
+### Test 26: Filtrar proyectos por estado Y presupuesto
+GET {{baseUrl}}/proyecto/?estado=Activo&presupuesto_min=40000&presupuesto_max=80000
+Accept: application/json
+
+###
+
+### Test 27: Obtener proyecto por ID (con gerente y empleados)
+GET {{baseUrl}}/proyecto/1
+Accept: application/json
+
+###
+
+### Test 28: Actualizar proyecto
+PUT {{baseUrl}}/proyecto/1
+Content-Type: application/json
+
+{
+  "nombre": "Sistema CRM Empresarial v2.0",
+  "descripcion": "Desarrollo de sistema de gestión de clientes con módulos de ventas, marketing y analytics",
+  "presupuesto": 85000.0,
+  "estado": "Activo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 29: Intentar obtener proyecto inexistente (debe fallar - 404)
+GET {{baseUrl}}/proyecto/999
+Accept: application/json
+
+###
+
+### ====================================================================
+### 🔗 ASIGNACIONES - EMPLEADOS ↔ PROYECTOS
+### ====================================================================
+
+### Test 30: Asignar empleado #2 al proyecto #1
+POST {{baseUrl}}/proyecto/1/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 2
+}
+
+###
+
+### Test 31: Asignar empleado #3 al proyecto #1
+POST {{baseUrl}}/proyecto/1/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 3
+}
+
+###
+
+### Test 32: Asignar empleado #4 al proyecto #1
+POST {{baseUrl}}/proyecto/1/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 4
+}
+
+###
+
+### Test 33: Intentar asignar el mismo empleado dos veces (debe fallar - 400)
+POST {{baseUrl}}/proyecto/1/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 2
+}
+
+###
+
+### Test 34: Intentar asignar empleado inexistente (debe fallar - 404)
+POST {{baseUrl}}/proyecto/1/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 999
+}
+
+###
+
+### Test 35: Asignar empleado #2 al proyecto #2
+POST {{baseUrl}}/proyecto/2/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 2
+}
+
+###
+
+### Test 36: Asignar empleado #3 al proyecto #2
+POST {{baseUrl}}/proyecto/2/asignar
+Content-Type: application/json
+
+{
+  "empleado_id": 3
+}
+
+###
+
+### Test 37: Listar empleados del proyecto #1
+GET {{baseUrl}}/proyecto/1/empleados
+Accept: application/json
+
+###
+
+### Test 38: Listar empleados del proyecto #2
+GET {{baseUrl}}/proyecto/2/empleados
+Accept: application/json
+
+###
+
+### Test 39: Ver proyectos del empleado #2 (debe tener 2 proyectos)
+GET {{baseUrl}}/empleado/2/proyectos
+Accept: application/json
+
+###
+
+### Test 40: Ver proyectos del empleado #1 (gerente, sin asignaciones)
+GET {{baseUrl}}/empleado/1/proyectos
+Accept: application/json
+
+###
+
+### Test 41: Desasignar empleado #4 del proyecto #1
+DELETE {{baseUrl}}/proyecto/1/desasignar/4
+
+###
+
+### Test 42: Verificar que empleado #4 fue desasignado
+GET {{baseUrl}}/proyecto/1/empleados
+Accept: application/json
+
+###
+
+### Test 43: Intentar desasignar empleado no asignado (debe fallar - 404)
+DELETE {{baseUrl}}/proyecto/1/desasignar/5
+
+###
+
+### Test 44: Intentar desasignar de proyecto inexistente (debe fallar - 404)
+DELETE {{baseUrl}}/proyecto/999/desasignar/2
+
+###
+
+### ====================================================================
+### ⚠️  VALIDACIONES DE NEGOCIO
+### ====================================================================
+
+### Test 45: Intentar eliminar empleado que es gerente (debe fallar - 400)
+DELETE {{baseUrl}}/empleado/1
+
+###
+
+### Test 46: Verificar que empleado gerente sigue existiendo
+GET {{baseUrl}}/empleado/1
+Accept: application/json
+
+###
+
+### Test 47: Eliminar empleado que NO es gerente (debe funcionar - 204)
+DELETE {{baseUrl}}/empleado/5
+
+###
+
+### Test 48: Verificar que empleado fue eliminado (debe fallar - 404)
+GET {{baseUrl}}/empleado/5
+Accept: application/json
+
+###
+
+### Test 49: Cambiar estado de proyecto a Inactivo
+PUT {{baseUrl}}/proyecto/3
+Content-Type: application/json
+
+{
+  "nombre": "Portal Web Corporativo",
+  "descripcion": "Portal web institucional con sistema de noticias y blog",
+  "presupuesto": 35000.0,
+  "estado": "Inactivo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 50: Verificar cambio de estado
+GET {{baseUrl}}/proyecto/3
+Accept: application/json
+
+###
+
+### Test 51: Eliminar proyecto
+DELETE {{baseUrl}}/proyecto/3
+
+###
+
+### Test 52: Verificar que proyecto fue eliminado (debe fallar - 404)
+GET {{baseUrl}}/proyecto/3
+Accept: application/json
+
+###
+
+### ====================================================================
+### 🔄 ACTUALIZACIÓN DE GERENTE
+### ====================================================================
+
+### Test 53: Crear nuevo empleado para ser gerente
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "Roberto Díaz Pérez",
+  "especialidad": "Senior Project Manager",
+  "salario": 8000.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 54: Cambiar gerente del proyecto #2 (validar que gerente_id se actualiza)
+PUT {{baseUrl}}/proyecto/2
+Content-Type: application/json
+
+{
+  "nombre": "App Mobile E-commerce",
+  "descripcion": "Aplicación móvil para comercio electrónico con pasarela de pagos",
+  "presupuesto": 50000.0,
+  "estado": "Activo",
+  "gerente_id": 6
+}
+
+###
+
+### Test 55: Verificar que el gerente cambió
+GET {{baseUrl}}/proyecto/2
+Accept: application/json
+
+###
+
+### ====================================================================
+### 📊 CASOS EXTREMOS Y EDGE CASES
+### ====================================================================
+
+### Test 56: Crear empleado con salario muy alto
+POST {{baseUrl}}/empleado/
+Content-Type: application/json
+
+{
+  "nombre": "CEO Ejecutivo",
+  "especialidad": "Chief Executive Officer",
+  "salario": 150000.0,
+  "estado": "Activo"
+}
+
+###
+
+### Test 57: Crear proyecto con presupuesto muy bajo
+POST {{baseUrl}}/proyecto/
+Content-Type: application/json
+
+{
+  "nombre": "Proyecto Pequeño",
+  "descripcion": "Proyecto de bajo presupuesto",
+  "presupuesto": 1000.0,
+  "estado": "Activo",
+  "gerente_id": 1
+}
+
+###
+
+### Test 58: Filtrar por presupuesto exacto
+GET {{baseUrl}}/proyecto/?presupuesto_min=1000&presupuesto_max=1000
+Accept: application/json
+
+###
+
+### Test 59: Listar empleados sin filtros
+GET {{baseUrl}}/empleado/
+Accept: application/json
+
+###
+
+### Test 60: Listar proyectos sin filtros
+GET {{baseUrl}}/proyecto/
+Accept: application/json
+
+###
+
+### ====================================================================
+### 🧹 LIMPIEZA (OPCIONAL - Ejecutar al final si quieres resetear)
+### ====================================================================
+
+### Test 61: Eliminar todos los proyectos uno por uno
+DELETE {{baseUrl}}/proyecto/1
+
+###
+
+DELETE {{baseUrl}}/proyecto/2
+
+###
+
+DELETE {{baseUrl}}/proyecto/4
+
+###
+
+### Test 62: Ahora sí se puede eliminar al gerente
+DELETE {{baseUrl}}/empleado/1
+
+###
+
+### ====================================================================
+### ✅ FIN DE LA SUITE DE TESTS
+###
+### Total de Tests: 62
+###
+### Categorías:
+### - Root & Health: 3 tests
+### - Empleados CRUD: 13 tests
+### - Proyectos CRUD: 13 tests
+### - Asignaciones: 15 tests
+### - Validaciones: 8 tests
+### - Actualización Gerente: 3 tests
+### - Edge Cases: 5 tests
+### - Limpieza: 2 tests
+###
+### Para ejecutar:
+### 1. Instalar extensión REST Client en VS Code
+### 2. Abrir este archivo
+### 3. Click en "Send Request" sobre cada test
+### 4. O usar Ctrl+Alt+R (Windows) / Cmd+Alt+R (Mac)
+###
+### ====================================================================
