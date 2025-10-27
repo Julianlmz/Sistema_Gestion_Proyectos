@@ -328,4 +328,4 @@ Este proyecto es parte de un ejercicio académico.
 
 ## Contacto
 
-Para preguntas o sugerencias, contactar a: [tu-email@ejemplo.com]
+Para preguntas o sugerencias, contactar a: [jsleal77@ucatolica.edu.co]
