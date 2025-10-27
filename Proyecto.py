@@ -94,3 +94,10 @@ async def desasignar_empleado(proyecto_id: int, empleado_id: int, session: Sessi
     session.delete(asignacion)
     session.commit()
     return
+
+@router.get("/{proyecto_id}/empleados", response_model= List[EmpleadoResumen])
+async def empleados_del_proyecto(proyecto_id: int, session: SessionDep):
+    proyecto = session.get(Proyecto, proyecto_id)
+    if not proyecto:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    return proyecto.empleados
