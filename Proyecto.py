@@ -82,3 +82,15 @@ async def asignar_empleado(proyecto_id: int, asignacion: AsignarEmpleado, sessio
     session.commit()
     session.refresh(proyecto)
     return proyecto
+
+@router.delete("/{proyecto_id}/desasignar/{empleado_id}", status_code=204)
+async def desasignar_empleado(proyecto_id: int, empleado_id: int, session: SessionDep):
+    proyecto = session.get(Proyecto, proyecto_id)
+    if not proyecto:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    asignacion = session.exec(select(EmpleadoProyecto).where(EmpleadoProyecto.empleado_id == empleado_id, EmpleadoProyecto.proyecto_id == proyecto_id)).first()
+    if not asignacion:
+        raise HTTPException(status_code=404, detail="El empleado no esta asignado a este proyecto")
+    session.delete(asignacion)
+    session.commit()
+    return
