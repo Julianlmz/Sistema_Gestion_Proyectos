@@ -30,6 +30,13 @@ async def lista_proyectos(estado: Estado = Query(default=None), presupuesto_min:
     proyectos = session.exec(query).all()
     return proyectos
 
+@router.get("/{proyecto_id}", response_model=ProyectoConRelaciones)
+async def obtener_proyecto(proyecto_id: int, session: SessionDep):
+    proyecto = session.get(Proyecto, proyecto_id)
+    if not proyecto:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    return proyecto
+
 @router.put("/{proyecto_id}", response_model=Proyecto)
 async def update_proyecto(proyecto_id: int, updated: ProyectoCreate, session: SessionDep):
     proyecto =session.get(Proyecto, proyecto_id)
