@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
-from Database import SessionDep
-from models import Proyecto, ProyectoCreate, Estado, ProyectoConRelaciones, Empleado, EmpleadoProyecto, AsignarEmpleado, EmpleadoResumen
+from app.database import SessionDep
+from app.models import Proyecto, ProyectoCreate, Estado, ProyectoConRelaciones, Empleado, EmpleadoProyecto, AsignarEmpleado, EmpleadoResumen
 from typing import List
 from sqlmodel import select
 
