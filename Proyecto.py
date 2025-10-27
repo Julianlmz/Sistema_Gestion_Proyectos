@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from Database import SessionDep
-from models import Proyecto, ProyectoCreate, Estado
+from models import Proyecto, ProyectoCreate, Estado, ProyectoConRelaciones, Empleado, EmpleadoProyecto, AsignarEmpleado, EmpleadoResumen
 from typing import List
 from sqlmodel import select
 
@@ -8,6 +8,12 @@ router = APIRouter(tags=["Proyecto"], prefix="/proyecto")
 
 @router.post("/", response_model=Proyecto, status_code=201)
 async def create_proyecto(new_proyecto: ProyectoCreate, session: SessionDep):
+    gerente = session.get(Empleado, new_proyecto.gerente_id)
+    if not gerente:
+        raise HTTPException(status_code=404, detail="Gerente no encontrado")
+    proyecto_existente = session.exec(select(Proyecto).where(Proyecto.nombre == new_proyecto.nombre)).first()
+    if proyecto_existente:
+        raise HTTPException(status_code=400, detail=f"Ya existe un proyecto con el nombre '{new_proyecto.nombre}'")
     proyecto = Proyecto.model_validate(new_proyecto)
     session.add(proyecto)
     session.commit()
