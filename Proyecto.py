@@ -21,8 +21,12 @@ async def create_proyecto(new_proyecto: ProyectoCreate, session: SessionDep):
     return proyecto
 
 @router.get("/", response_model=List[Proyecto])
-async def lista_proyectos(presupuesto: float, estado: Estado, session: SessionDep):
-    query = select(Proyecto).where(Proyecto.presupuesto.contains(presupuesto), Proyecto.estado == estado)
+async def lista_proyectos(estado: Estado = Query(default=None), presupuesto_min: float = Query(default=0), presupuesto_max: float = Query(default=float("inf")), session: SessionDep = None):
+    query = select(Proyecto)
+    if estado:
+        query = query.where(Proyecto.estado == estado)
+    query = query.where(Proyecto.presupuesto >= presupuesto_min)
+    query = query.where(Proyecto.presupuesto <= presupuesto_max)
     proyectos = session.exec(query).all()
     return proyectos
 
