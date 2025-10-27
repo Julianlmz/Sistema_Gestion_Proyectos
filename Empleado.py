@@ -56,7 +56,7 @@ async def delete_empleado(empleado_id: int, session: SessionDep):
     session.commit()
     return
 
-@router.get("/{empleado_id}", response_model=dict)
+@router.get("/{empleado_id}/proyectos", response_model=dict)
 async def proyectos_del_empleado(empleado_id: int, session: SessionDep):
     empleado = session.get(Empleado, empleado_id)
     if not empleado:
