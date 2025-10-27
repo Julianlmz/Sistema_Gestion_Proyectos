@@ -55,3 +55,15 @@ async def delete_empleado(empleado_id: int, session: SessionDep):
     session.delete(empleado)
     session.commit()
     return
+
+@router.get("/{empleado_id}", response_model=dict)
+async def proyectos_del_empleado(empleado_id: int, session: SessionDep):
+    empleado = session.get(Empleado, empleado_id)
+    if not empleado:
+        raise HTTPException(status_code=404, detail="El empleado no existe")
+    proyectos_asignados = [{"id": p.id, "nombre": p.nombre} for p in empleado.proyectos]
+    proyectos_como_gerente = [{"id": p.id, "nombre": p.nombre, "rol": "gerente"}for p in empleado.proyectos_gerente]
+    return {"empleado_id": empleado_id,
+            "nombre": empleado.nombre,
+            "proyectos_asignados": proyectos_asignados,
+            "proyectos_como_gerente": proyectos_como_gerente}
