@@ -53,6 +53,7 @@ async def update_proyecto(proyecto_id: int, updated: ProyectoCreate, session: Se
     proyecto.descripcion = updated.descripcion
     proyecto.presupuesto = updated.presupuesto
     proyecto.estado = updated.estado
+    proyecto.gerente_id = updated.gerente_id
     session.commit()
     session.refresh(proyecto)
     return proyecto
