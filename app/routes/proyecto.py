@@ -13,7 +13,7 @@ async def create_proyecto(new_proyecto: ProyectoCreate, session: SessionDep):
         raise HTTPException(status_code=404, detail="Gerente no encontrado")
     proyecto_existente = session.exec(select(Proyecto).where(Proyecto.nombre == new_proyecto.nombre)).first()
     if proyecto_existente:
-        raise HTTPException(status_code=400, detail=f"Ya existe un proyecto con el nombre '{new_proyecto.nombre}'")
+        raise HTTPException(status_code=409, detail=f"Ya existe un proyecto con el nombre '{new_proyecto.nombre}'")
     proyecto = Proyecto.model_validate(new_proyecto)
     session.add(proyecto)
     session.commit()
@@ -39,16 +39,16 @@ async def obtener_proyecto(proyecto_id: int, session: SessionDep):
 
 @router.put("/{proyecto_id}", response_model=Proyecto)
 async def update_proyecto(proyecto_id: int, updated: ProyectoCreate, session: SessionDep):
-    proyecto =session.get(Proyecto, proyecto_id)
+    proyecto = session.get(Proyecto, proyecto_id)
     if not proyecto:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
     gerente = session.get(Empleado, updated.gerente_id)
     if not gerente:
         raise HTTPException(status_code=404, detail="Gerente no encontrado")
     if proyecto.nombre != updated.nombre:
-        updated = session.exec(select(Proyecto).where(Proyecto.nombre == updated.nombre)).first()
-        if updated:
-            raise HTTPException(status_code=400, detail= f"Ya existe un proyecto con el nombre '{updated.nombre}'")
+        proyecto_existente = session.exec(select(Proyecto).where(Proyecto.nombre == updated.nombre)).first()
+        if proyecto_existente:
+            raise HTTPException(status_code=409, detail=f"Ya existe un proyecto con el nombre '{updated.nombre}'")
     proyecto.nombre = updated.nombre
     proyecto.descripcion = updated.descripcion
     proyecto.presupuesto = updated.presupuesto
@@ -77,7 +77,7 @@ async def asignar_empleado(proyecto_id: int, asignacion: AsignarEmpleado, sessio
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
     asignacion_existente = session.exec(select(EmpleadoProyecto).where(EmpleadoProyecto.empleado_id == asignacion.empleado_id, EmpleadoProyecto.proyecto_id == proyecto_id)).first()
     if asignacion_existente:
-        raise HTTPException(status_code=400, detail= f"El empleado '{empleado.nombre}' ya esta asignado al proyecto '{proyecto.nombre}'")
+        raise HTTPException(status_code=409, detail= f"El empleado '{empleado.nombre}' ya esta asignado al proyecto '{proyecto.nombre}'")
     nueva_asignacion = EmpleadoProyecto(empleado_id = asignacion.empleado_id, proyecto_id = proyecto_id)
     session.add(nueva_asignacion)
     session.commit()
