@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Relationship, Field
 from enum import Enum
 from typing import List
 from pydantic import field_validator
+import re
 
 
 class Estado(str, Enum):
@@ -48,6 +49,14 @@ class EmpleadoBase(SQLModel):
     def redondear_salario(cls, v: float) -> float:
         """Redondea el salario a 2 decimales."""
         return round(v, 2)
+
+    @field_validator('nombre', 'especialidad')
+    @classmethod
+    def validar_solo_letras(cls, v: str) -> str:
+        patron = r"^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$"
+        if not re.match(patron, v):
+            raise ValueError(f"El campo debe contener solo letras y espacios. Valor recibido: '{v}'")
+        return v
 
 
 class Empleado(EmpleadoBase, SQLModel, table=True):
@@ -145,6 +154,13 @@ class ProyectoBase(SQLModel):
         """Redondea el presupuesto a 2 decimales."""
         return round(v, 2)
 
+    @field_validator('nombre', 'descripcion')
+    @classmethod
+    def validar_solo_letras(cls, v: str) -> str:
+        patron = r"^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$"
+        if not re.match(patron, v):
+            raise ValueError(f"El campo debe contener solo letras y espacios. Valor recibido: '{v}'")
+        return v
 
 class Proyecto(ProyectoBase, SQLModel, table=True):
     """
