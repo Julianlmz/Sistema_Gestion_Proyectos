@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from app.database import SessionDep
-from app.models import Proyecto, ProyectoCreate, Estado, ProyectoConRelaciones, Empleado, EmpleadoProyecto, AsignarEmpleado, EmpleadoResumen
+from app.models import Proyecto, ProyectoCreate, Estado, ProyectoConRelaciones, Empleado, EmpleadoProyecto, AsignarEmpleado, EmpleadoResumen, ProyectoUpdate
 from typing import List
 from sqlmodel import select
 
@@ -133,6 +133,49 @@ async def update_proyecto(proyecto_id: int, updated: ProyectoCreate, session: Se
     session.commit()
     session.refresh(proyecto)
     return proyecto
+
+
+@router.patch("/{proyecto_id}", response_model=Proyecto)
+async def patch_proyecto(proyecto_id: int, updated: ProyectoUpdate, session: SessionDep):
+    """
+        Args:
+            proyecto_id (int): ID único del proyecto a actualizar.
+            updated (ProyectoUpdate): Datos nuevos del proyecto (parciales).
+            session (SessionDep): Sesión activa de base de datos.
+
+        Returns:
+            Proyecto: Instancia del proyecto actualizada con los nuevos datos.
+
+        Raises:
+            HTTPException 404: Si el proyecto o el gerente especificado no existen.
+            HTTPException 400: Si no se proporcionan datos para actualizar.
+            HTTPException 409: Si el nuevo nombre de proyecto ya está en uso.
+        """
+
+    proyecto_db = session.get(Proyecto, proyecto_id)
+    if not proyecto_db:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    update_data = updated.model_dump(exclude_unset=True)
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No se proporcionaron datos para actualizar")
+    if "gerente_id" in update_data:
+        nuevo_gerente_id = update_data["gerente_id"]
+        gerente = session.get(Empleado, nuevo_gerente_id)
+        if not gerente:
+            raise HTTPException(status_code=404, detail=f"Gerente con id {nuevo_gerente_id} no encontrado")
+    if "nombre" in update_data:
+        nuevo_nombre = update_data["nombre"]
+        if proyecto_db.nombre != nuevo_nombre:
+            proyecto_existente = session.exec(select(Proyecto).where(Proyecto.nombre == nuevo_nombre)).first()
+            if proyecto_existente:
+                raise HTTPException(status_code=409, detail=f"Ya existe un proyecto con el nombre '{nuevo_nombre}'")
+    for key, value in update_data.items():
+        setattr(proyecto_db, key, value)
+    session.add(proyecto_db)
+    session.commit()
+    session.refresh(proyecto_db)
+
+    return proyecto_db
 
 
 @router.delete("/{proyecto_id}", status_code=204)
