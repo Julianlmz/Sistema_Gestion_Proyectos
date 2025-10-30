@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from app.database import SessionDep
-from app.models import Empleado, EmpleadoCreate, Estado, EmpleadoConProyectos
+from app.models import Empleado, EmpleadoCreate, Estado, EmpleadoConProyectos, EmpleadoUpdate
 from typing import List
 from sqlmodel import select
 
@@ -105,6 +105,37 @@ async def update_empleado(empleado_id: int, updated: EmpleadoCreate, session: Se
     session.commit()
     session.refresh(empleado)
     return empleado
+
+
+@router.patch("/{empleado_id}", response_model=Empleado)
+async def patch_empleado(empleado_id: int, updated: EmpleadoUpdate, session: SessionDep):
+    """
+    Args:
+        empleado_id (int): ID único del empleado a actualizar.
+        updated (EmpleadoUpdate): Datos nuevos del empleado (parciales).
+        session (SessionDep): Sesión activa de base de datos.
+
+    Returns:
+        Empleado: Instancia del empleado actualizada con los nuevos datos.
+
+    Raises:
+        HTTPException 404: Si el empleado con el ID especificado no existe.
+        HTTPException 400: Si no se proporcionan datos para actualizar.
+    """
+
+    empleado_db = session.get(Empleado, empleado_id)
+    if not empleado_db:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    update_data = updated.model_dump(exclude_unset=True)
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No se proporcionaron datos para actualizar")
+    for key, value in update_data.items():
+        setattr(empleado_db, key, value)
+    session.add(empleado_db)
+    session.commit()
+    session.refresh(empleado_db)
+    return empleado_db
 
 
 @router.delete("/{empleado_id}", status_code=204)
