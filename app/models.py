@@ -85,6 +85,37 @@ class EmpleadoCreate(EmpleadoBase):
     pass
 
 
+class EmpleadoUpdate(SQLModel):
+    """
+    Esquema para actualizar parcialmente un empleado (PATCH).
+    Todos los campos son opcionales.
+    """
+    nombre: str | None = Field(default=None, min_length=3, max_length=50)
+    especialidad: str | None = Field(default=None, min_length=3, max_length=50)
+    salario: float | None = Field(default=None, gt=0)
+    estado: Estado | None = None
+
+    @field_validator('salario')
+    @classmethod
+    def redondear_salario_opcional(cls, v: float | None) -> float | None:
+        """Redondea el salario a 2 decimales si se proporciona."""
+        if v is not None:
+            return round(v, 2)
+        return None
+
+    @field_validator('nombre', 'especialidad')
+    @classmethod
+    def validar_solo_letras_opcional(cls, v: str | None) -> str | None:
+        """Valida que el campo solo contenga letras y espacios, si se proporciona."""
+        if v is None:
+            return None
+
+        patron = r"^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$"
+        if not re.match(patron, v):
+            raise ValueError(f"El campo debe contener solo letras y espacios. Valor recibido: '{v}'")
+        return v
+
+
 class EmpleadoConProyectos(EmpleadoBase):
     """
     Esquema de respuesta de empleado con sus proyectos asignados.
@@ -190,6 +221,47 @@ class ProyectoCreate(ProyectoBase):
         gerente_id: ID del empleado que será gerente del proyecto
     """
     gerente_id: int
+
+class ProyectoUpdate(SQLModel):
+    """
+    Esquema para actualizar parcialmente un proyecto (PATCH).
+    Todos los campos son opcionales.
+    """
+    nombre: str | None = Field(default=None, min_length=3, max_length=50)
+    descripcion: str | None = Field(default=None, min_length=10, max_length=100)
+    presupuesto: float | None = Field(default=None, gt=0)
+    estado: Estado | None = None
+    gerente_id: int | None = None # También hacemos opcional el gerente
+
+    @field_validator('presupuesto')
+    @classmethod
+    def redondear_presupuesto_opcional(cls, v: float | None) -> float | None:
+        """Redondea el presupuesto a 2 decimales si se proporciona."""
+        if v is not None:
+            return round(v, 2)
+        return None
+
+    @field_validator('nombre')
+    @classmethod
+    def validar_nombre_proyecto_opcional(cls, v: str | None) -> str | None:
+        """Valida que el nombre del proyecto solo contenga letras y espacios, si se proporciona."""
+        if v is None:
+            return None
+        patron_nombre = r"^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$"
+        if not re.match(patron_nombre, v):
+            raise ValueError(f"El nombre debe contener solo letras y espacios. Valor recibido: '{v}'")
+        return v
+
+    @field_validator('descripcion')
+    @classmethod
+    def validar_descripcion_proyecto_opcional(cls, v: str | None) -> str | None:
+        """Valida la descripción (permite letras, números, espacios y puntuación básica), si se proporciona."""
+        if v is None:
+            return None
+        patron_desc = r"^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\s.,:;()¡!¿?]+$"
+        if not re.match(patron_desc, v):
+            raise ValueError(f"La descripción contiene caracteres no permitidos. Valor recibido: '{v}'")
+        return v
 
 
 class ProyectoConRelaciones(ProyectoBase):
